@@ -26,7 +26,7 @@ Bring them all into the game.
 More buddies, more coins.`,
         reply_markup: {
           inline_keyboard: [
-            [{ text: 'Играть в один клик', url: 'https://tajstox.online/' }], // Изменено на 'url'
+            [{ text: 'Играть в один клик', url: 'https://t.me/{Tajstoxbot}?start={payload}' }], // Изменено на 'url'
             [{ text: 'Подписаться на канал', callback_data: 'button2' }],
             [{ text: 'Как заработать на игре', callback_data: 'button3' }],
           ],
