@@ -7,35 +7,41 @@ export class AuthService {
 
   verifyTelegramData(initData: string): boolean {
     console.log('Verifying Telegram data...');
-
-    // The data is a query string, which is composed of a series of field-value pairs.
-    const encoded = decodeURIComponent(initData); 
     
+    // Раскодируем полученные данные
+    const encoded = decodeURIComponent(initData);
+    console.log('Decoded initData:', encoded);
     
-    // HMAC-SHA-256 signature of the bot's token with the constant string WebAppData used as a key.
-    const secret = crypto
-      .createHmac('sha256', 'WebAppData')
-      .update(process.env.BOT_TOKEN);
-
-    // Data-check-string is a chain of all received fields'.
+    // Создаем секретный ключ
+    const secret = crypto.createHmac('sha256', 'WebAppData').update(process.env.BOT_TOKEN);
+    console.log('Secret key:', secret.digest('hex'));
+    
+    // Парсим строку и получаем массив пар "ключ=значение"
     const arr = encoded.split('&');
+    console.log('Parsed array:', arr);
+  
+    // Находим индекс хеша в массиве
     const hashIndex = arr.findIndex(str => str.startsWith('hash='));
     const hash = arr.splice(hashIndex)[0].split('=')[1];
-    // sorted alphabetically
+    console.log('Received hash:', hash);
+    
+    // Сортировка по алфавиту
     arr.sort((a, b) => a.localeCompare(b));
-    // in the format key=<value> with a line feed character ('\n', 0x0A) used as separator
-    // e.g., 'auth_date=<auth_date>\nquery_id=<query_id>\nuser=<user>
+    console.log('Sorted data:', arr);
+    
+    // Создаем строку для контрольной проверки
     const dataCheckString = arr.join('\n');
+    console.log('Data-check string:', dataCheckString);
+  
+    // Вычисляем хеш от dataCheckString
+    const _hash = crypto.createHmac('sha256', secret.digest()).update(dataCheckString).digest('hex');
+    console.log('Computed hash:', _hash);
     
-    // The hexadecimal representation of the HMAC-SHA-256 signature of the data-check-string with the secret key
-    const _hash = crypto
-      .createHmac('sha256', secret.digest())
-      .update(dataCheckString)
-      .digest('hex');
-    
-    // if hash are equal the data may be used on your server.
-    // Complex data types are represented as JSON-serialized objects.
-    return _hash === hash;
+    // Сравниваем ожидаемый и полученный хеши
+    const result = _hash === hash;
+    console.log('Verification result:', result);
+  
+    return result;
   }
 
   getUserId(initData: string): number {
