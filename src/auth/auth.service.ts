@@ -1,51 +1,64 @@
 import { Injectable } from '@nestjs/common';
 import * as crypto from 'crypto';
 import * as jwt from 'jsonwebtoken';
+import { createHmac } from "node:crypto";
 
 @Injectable()
 export class AuthService {
 
+  parseInitData(initData: string) {
+    const q = new URLSearchParams(initData);
+    const hash = q.get("hash");
+    q.delete("hash");
+    const v = Array.from(q.entries());
+    v.sort(([aN], [bN]) => aN.localeCompare(bN));
+    const data_check_string = v.map(([n, v]) => `${n}=${v}`).join("\n");
+    return { hash, data_check_string };
+  }
+  
+  checkSignature(initData: string) {
+    const bot_token = process.env.BOT_TOKEN
+    const { hash, data_check_string } = this.parseInitData(initData);
+  
+    const secret_key = createHmac("sha256", "WebAppData").update(bot_token).digest();
+    const key = createHmac("sha256", secret_key)
+      .update(data_check_string)
+      .digest("hex");
+  
+    return key === hash;
+  }
+
   verifyTelegramData(initData: string): boolean {
     console.log('Verifying Telegram data...');
-    
-    // Раскодируем полученные данные
-    const encoded = decodeURIComponent(initData);
-    console.log('Decoded initData:', encoded);
 
-    // Создаем секретный ключ на основе токена бота
-    const secretKey = crypto.createHash('sha256').update(process.env.BOT_TOKEN).digest();
-    console.log('Secret key:', secretKey.toString('hex'));
+    // The data is a query string, which is composed of a series of field-value pairs.
+    const encoded = decodeURIComponent(initData); 
     
-    // Парсим строку и получаем массив пар "ключ=значение"
+
+    // HMAC-SHA-256 signature of the bot's token with the constant string WebAppData used as a key.
+    const secret = crypto
+      .createHmac('sha256', 'WebAppData')
+      .update(process.env.BOT_TOKEN);
+
+    // Data-check-string is a chain of all received fields'.
     const arr = encoded.split('&');
-    console.log('Parsed array:', arr);
-
-    // Находим индекс хеша в массиве
     const hashIndex = arr.findIndex(str => str.startsWith('hash='));
-    if (hashIndex === -1) {
-      console.error('Hash not found in initData');
-      return false;
-    }
-    const hash = arr.splice(hashIndex, 1)[0].split('=')[1];
-    console.log('Received hash:', hash);
-
-    // Сортировка по алфавиту остальных данных
+    const hash = arr.splice(hashIndex)[0].split('=')[1];
+    // sorted alphabetically
     arr.sort((a, b) => a.localeCompare(b));
-    console.log('Sorted data:', arr);
-
-    // Создаем строку для контрольной проверки
+    // in the format key=<value> with a line feed character ('\n', 0x0A) used as separator
+    // e.g., 'auth_date=<auth_date>\nquery_id=<query_id>\nuser=<user>
     const dataCheckString = arr.join('\n');
-    console.log('Data-check string:', dataCheckString);
-
-    // Вычисляем хеш от dataCheckString с использованием секретного ключа
-    const _hash = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
-    console.log('Computed hash:', _hash);
-
-    // Сравниваем ожидаемый и полученный хеши
-    const result = _hash === hash;
-    console.log('Verification result:', result);
-
-    return result;
+    
+    // The hexadecimal representation of the HMAC-SHA-256 signature of the data-check-string with the secret key
+    const _hash = crypto
+      .createHmac('sha256', secret.digest())
+      .update(dataCheckString)
+      .digest('hex');
+    
+    // if hash are equal the data may be used on your server.
+    // Complex data types are represented as JSON-serialized objects.
+    return _hash === hash;
   }
 
   getUserId(initData: string): number {
@@ -66,7 +79,7 @@ export class AuthService {
 
   authenticateUser(initData: string) {
     console.log('Starting user authentication...');
-    if (!this.verifyTelegramData(initData)) {
+    if (!this.checkSignature(initData)) {
       console.error('Invalid Telegram data');
       throw new Error('Invalid Telegram data');
     }
@@ -80,4 +93,3 @@ export class AuthService {
     return encryptedString;
   }
 }
-
