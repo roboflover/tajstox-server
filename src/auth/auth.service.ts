@@ -1,19 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import * as crypto from 'crypto';
 import * as jwt from 'jsonwebtoken';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-  private readonly botToken:string; // Ваш токен бота
-  constructor() {
-    if (!process.env.BOT_TOKEN) {
-      throw new Error('BOT_TOKEN is not defined in the environment');
-    }
-    this.botToken = process.env.BOT_TOKEN;
-  }
+  private configService: ConfigService
+  
   verifyTelegramData(initData: string): boolean {
+    const botToken = this.configService.get<string>('BOT_TOKEN');
+    console.log('botToken: ', botToken)
     console.log('Verifying Telegram data...');
-    const secretKey = crypto.createHash('sha256').update(this.botToken).digest();
+    const secretKey = crypto.createHash('sha256').update(botToken).digest();
     const parsedData = new URLSearchParams(initData);
     const hash = parsedData.get('hash');
     const dataCheckString = [...parsedData.entries()]
