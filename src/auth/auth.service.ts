@@ -24,7 +24,8 @@ export class AuthService {
     const key = createHmac("sha256", secret_key)
       .update(data_check_string)
       .digest("hex");
-  
+    console.log('key', key)
+    console.log('hash', hash)
     return key === hash;
   }
 
