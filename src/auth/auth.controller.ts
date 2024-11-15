@@ -8,7 +8,6 @@ export class AuthController {
   @Get('authenticate')
   authenticateUser(@Query('initData') initData: string): string {
     try {
-      console.log(initData)
       return this.authService.authenticateUser(initData);
     } catch (error) {
       throw new UnauthorizedException('Failed to authenticate user');
