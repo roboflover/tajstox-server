@@ -10,12 +10,15 @@ export class AuthService {
     const secretKey = crypto.createHash('sha256').update(process.env.BOT_TOKEN).digest();
     const parsedData = new URLSearchParams(initData);
     const hash = parsedData.get('hash');
+    
+    // Создаем строку данных для проверки
     const dataCheckString = [...parsedData.entries()]
       .filter(([key]) => key !== 'hash')
       .map(([key, value]) => `${key}=${value}`)
-      .sort()
-      .join('n');
-
+      .sort() // Параметры должны быть отсортированы по алфавиту
+      .join('\n'); // Используем правильный символ новой строки
+  
+    // Вычисляем хеш
     const hmac = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
     console.log(`Expected hash: ${hmac}, Received hash: ${hash}`);
     return hmac === hash;
