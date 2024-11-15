@@ -1,15 +1,14 @@
-// cosmotapbot 7616166878:AAHKr7IvCJz7hSPZTi3lj9vYQ5j7JAiWTOw
-// tajstox 8193856623:AAHvmJCbFTkaxVSxJ4ooq0Q-LmQLvH3Va3Q
-
 import { Injectable } from '@nestjs/common';
 import { Telegraf } from 'telegraf';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class BotService {
   private bot: Telegraf;
   
-  constructor() {
-    this.bot = new Telegraf('8193856623:AAHvmJCbFTkaxVSxJ4ooq0Q-LmQLvH3Va3Q'); // Замените на ваш токен
+  constructor(private configService: ConfigService) {
+    const botToken = this.configService.get<string>('BOT_TOKEN');
+    this.bot = new Telegraf(botToken); 
     this.bot.start((ctx) => this.sendWelcomeMessage(ctx));
     this.bot.launch();
   }
@@ -29,7 +28,7 @@ Bring them all into the game.
 More buddies, more coins.`,
         reply_markup: {
           inline_keyboard: [
-            [{ text: 'Играть в один клик', url: 'https://t.me/Tajstoxbot/tajstox' }], // Изменено на 'url'
+            [{ text: 'Играть в один клик', url: 't.me/cosmostap_bot/myapp' }], // Изменено на 'url'
             [{ text: 'Подписаться на канал', callback_data: 'button2' }],
             [{ text: 'Как заработать на игре', callback_data: 'button3' }],
           ],
