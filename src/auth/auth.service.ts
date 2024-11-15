@@ -11,36 +11,40 @@ export class AuthService {
     // Раскодируем полученные данные
     const encoded = decodeURIComponent(initData);
     console.log('Decoded initData:', encoded);
-    
-    // Создаем секретный ключ
-    const secret = crypto.createHmac('sha256', 'WebAppData').update(process.env.BOT_TOKEN);
-    console.log('Secret key:', secret.digest('hex'));
+
+    // Создаем секретный ключ на основе токена бота
+    const secretKey = crypto.createHash('sha256').update(process.env.BOT_TOKEN).digest();
+    console.log('Secret key:', secretKey.toString('hex'));
     
     // Парсим строку и получаем массив пар "ключ=значение"
     const arr = encoded.split('&');
     console.log('Parsed array:', arr);
-  
+
     // Находим индекс хеша в массиве
     const hashIndex = arr.findIndex(str => str.startsWith('hash='));
-    const hash = arr.splice(hashIndex)[0].split('=')[1];
+    if (hashIndex === -1) {
+      console.error('Hash not found in initData');
+      return false;
+    }
+    const hash = arr.splice(hashIndex, 1)[0].split('=')[1];
     console.log('Received hash:', hash);
-    
-    // Сортировка по алфавиту
+
+    // Сортировка по алфавиту остальных данных
     arr.sort((a, b) => a.localeCompare(b));
     console.log('Sorted data:', arr);
-    
+
     // Создаем строку для контрольной проверки
     const dataCheckString = arr.join('\n');
     console.log('Data-check string:', dataCheckString);
-  
-    // Вычисляем хеш от dataCheckString
-    const _hash = crypto.createHmac('sha256', secret.digest()).update(dataCheckString).digest('hex');
+
+    // Вычисляем хеш от dataCheckString с использованием секретного ключа
+    const _hash = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
     console.log('Computed hash:', _hash);
-    
+
     // Сравниваем ожидаемый и полученный хеши
     const result = _hash === hash;
     console.log('Verification result:', result);
-  
+
     return result;
   }
 
@@ -76,3 +80,4 @@ export class AuthService {
     return encryptedString;
   }
 }
+
