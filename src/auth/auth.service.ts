@@ -21,7 +21,7 @@ export class AuthService {
 
     const secret = crypto.createHmac('sha256', 'WebAppData').update(process.env.BOT_TOKEN ?? '');
     const calculatedHash = crypto.createHmac('sha256', secret.digest()).update(dataCheckString).digest('hex');
-
+    console.log(calculatedHash)
     return calculatedHash === hash;
 }
 
