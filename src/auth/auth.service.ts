@@ -99,7 +99,7 @@ export class AuthService {
 
   authenticateUser(initData: string) {
     console.log('Starting user authentication...');
-    if (!this.verifyInitData(initData)) {
+    if (!this.checkSignature(initData)) {
       console.error('Invalid Telegram data');
       throw new Error('Invalid Telegram data');
     }
