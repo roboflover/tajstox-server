@@ -5,10 +5,11 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-  private configService: ConfigService
   
   verifyTelegramData(initData: string): boolean {
-    const botToken = this.configService.get<string>('BOT_TOKEN');
+    let configService: ConfigService
+
+    const botToken = configService.get<string>('BOT_TOKEN');
     console.log('botToken: ', botToken)
     console.log('Verifying Telegram data...');
     const secretKey = crypto.createHash('sha256').update(botToken).digest();
