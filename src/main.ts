@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
+  
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const frontendUrl = configService.get('FRONTEND_URL');
@@ -18,6 +19,8 @@ async function bootstrap() {
   app.enableCors();
   await app.listen(port); 
   console.log('port', port)
+  console.log('Process environment BOT_TOKEN:', process.env.BOT_TOKEN);
+
 }
 bootstrap();
 

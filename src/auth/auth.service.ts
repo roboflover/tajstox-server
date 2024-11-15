@@ -4,18 +4,10 @@ import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
-  private readonly botToken:string; // Ваш токен бота
 
-  constructor() {
-    if (!process.env.BOT_TOKEN) {
-      throw new Error('BOT_TOKEN is not defined in the environment');
-    }
-    this.botToken = process.env.BOT_TOKEN;
-    console.log('this.botToken', this.botToken)
-  }
   verifyTelegramData(initData: string): boolean {
     console.log('Verifying Telegram data...');
-    const secretKey = crypto.createHash('sha256').update(this.botToken).digest();
+    const secretKey = crypto.createHash('sha256').update(process.env.BOT_TOKEN).digest();
     const parsedData = new URLSearchParams(initData);
     const hash = parsedData.get('hash');
     const dataCheckString = [...parsedData.entries()]
