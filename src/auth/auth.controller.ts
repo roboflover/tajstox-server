@@ -10,7 +10,7 @@ export class AuthController {
   @Post('authenticate')
   authenticateUser(@Headers('authorization') authorization: string): string {
     const [authType, initData] = (authorization || '').split(' ');
-    console.log(initData)
+    console.log('initData', initData)
     if (authType !== 'tma' || !initData) {
       throw new UnauthorizedException('Неверная схема авторизации');
     }
