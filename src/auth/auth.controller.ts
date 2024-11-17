@@ -12,6 +12,7 @@ export class AuthController {
     const [authType, initData] = (authorization || '').split(' ');
     console.log('initData', initData)
     if (authType !== 'tma' || !initData) {
+      console.log('Неверная схема авторизации')
       throw new UnauthorizedException('Неверная схема авторизации');
     }
 
