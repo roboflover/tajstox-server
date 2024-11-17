@@ -1,25 +1,26 @@
 // src/auth/auth.middleware.ts
 import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { AuthService } from './auth.service';
+import { validate, parse } from '@telegram-apps/init-data-node';
+
+const token = '8193856623:AAHvmJCbFTkaxVSxJ4ooq0Q-LmQLvH3Va3Q';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  constructor(private readonly authService: AuthService) {}
-
   use(req: Request, res: Response, next: NextFunction) {
     const [authType, authData = ''] = (req.header('authorization') || '').split(' ');
 
-    if (authType === 'tma') {
-      try {
-        const initData = this.authService.validateInitData(authData);
-        res.locals.initData = initData;
-        return next();
-      } catch (error) {
-        return next(error);
+    try {
+      switch (authType) {
+        case 'tma':
+          validate(authData, token, { expiresIn: 3600 });
+          res.locals.initData = parse(authData);
+          return next();
+        default:
+          throw new UnauthorizedException('Unauthorized');
       }
+    } catch (e) {
+      return next(new UnauthorizedException(e.message));
     }
-
-    return next(new UnauthorizedException('Unauthorized'));
   }
 }
