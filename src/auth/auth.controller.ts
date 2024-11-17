@@ -10,13 +10,14 @@ export class AuthController {
   @Post('authenticate')
   authenticateUser(@Headers('authorization') authorization: string): string {
     const [authType, initData] = (authorization || '').split(' ');
-    console.log('initData', initData)
+    // console.log('initData', initData)
     if (authType !== 'tma' || !initData) {
       console.log('Неверная схема авторизации')
       throw new UnauthorizedException('Неверная схема авторизации');
     }
 
     try {
+      console.log('вызываю метод validateInitData')
       // Используем existing метод validateInitData для валидации
       const validData = this.authService.validateInitData(initData);
       // Например, можем вернуть часть валидных данных
