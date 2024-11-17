@@ -9,7 +9,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
     @PublicRoute()
-    @Post("authorization")
+    @Post("authenticate")
     async login(@Body() body: { initData: string }) {
         return await this.authService.validateInitData(body.initData)
     }
