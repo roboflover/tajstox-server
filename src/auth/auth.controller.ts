@@ -11,6 +11,7 @@ export class AuthController {
     @PublicRoute()
     @Post("authenticate")
     async login(@Body() body: { initData: string }) {
+      console.log('privet server')
         return await this.authService.validateInitData(body.initData)
     }
 
