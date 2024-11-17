@@ -10,7 +10,7 @@ export class AuthService {
     try {
       const authData2 = `tma ${authData}`
       console.log('authData2', authData2)
-      validate(authData2, this.token, { expiresIn: 3600 });
+      validate(authData2, this.token, { expiresIn: 300 });
       return parse(authData);
     } catch (error) {
       throw new UnauthorizedException('Invalid authorization data');
