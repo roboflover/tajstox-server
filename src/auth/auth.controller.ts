@@ -1,16 +1,27 @@
-import { Controller, Get, Query, UnauthorizedException } from '@nestjs/common';
+// auth.controller.ts
+
+import { Controller, Post, UnauthorizedException, Headers } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Get('authenticate')
-  authenticateUser(@Query('initData') initData: string): string {
+  @Post('authenticate')
+  authenticateUser(@Headers('authorization') authorization: string): string {
+    const [authType, initData] = (authorization || '').split(' ');
+
+    if (authType !== 'tma' || !initData) {
+      throw new UnauthorizedException('Неверная схема авторизации');
+    }
+
     try {
-      return this.authService.authenticateUser(initData);
+      // Используем existing метод validateInitData для валидации
+      const validData = this.authService.validateInitData(initData);
+      // Например, можем вернуть часть валидных данных
+      return `Authentication successful: ${JSON.stringify(validData)}`;
     } catch (error) {
-      throw new UnauthorizedException('Failed to authenticate user');
+      throw new UnauthorizedException('Ошибка аутентификации пользователя');
     }
   }
 }
