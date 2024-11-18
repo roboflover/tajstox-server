@@ -10,12 +10,12 @@ export class UsersService {
   async updateScore(dto: UpdateScoreDto) {
     return this.prisma.user.update({
       where: { telegramId: dto.telegramId.toString() },
-      data: { score: parseInt(dto.score) },
+      data: { score: parseInt(dto.score) + 1 },
     });
   }
 
   async getScore(telegramId: string): Promise<number> {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({  
       where: { telegramId: telegramId },
     });
 
