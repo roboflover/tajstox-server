@@ -1,5 +1,5 @@
 // src/users/users.controller.ts
-import { Controller, Patch, Body, Get } from '@nestjs/common';
+import { Controller, Patch, Body, Get, BadRequestException, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateScoreDto } from './dto/update-score.dto';
 
@@ -14,9 +14,14 @@ export class UsersController {
   }
 
   @Get('score')
-  async getScore(@Body() telegramId: string) {
+  async getScore(@Query('telegramId') telegramId: string) {
+    if (!telegramId) {
+      throw new BadRequestException('telegramId is required');
+    }
+
     const score = await this.usersService.getScore(telegramId);
     return { data: score };
   }
+  
 
 }
