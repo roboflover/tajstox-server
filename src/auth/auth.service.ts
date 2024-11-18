@@ -7,14 +7,11 @@ import { LoginDto } from './dto/login.dto';
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
-  private сreateUserDto: CreateUserDto
-  constructor(private prisma: PrismaService,
-              
-  ) {}
+
+  constructor(private prisma: PrismaService) {}
 
   async login(authData: string): Promise<InitData> {
     const token = '7616166878:AAHKr7IvCJz7hSPZTi3lj9vYQ5j7JAiWTOw';
-    // это токен от тестового бота его нужно удалить из основного бота.
 
     this.logger.debug(`Received authData: ${authData}`);
     
@@ -27,16 +24,7 @@ export class AuthService {
       this.logger.debug(`Parsed data: ${JSON.stringify(parsedData)}`);
 
       // Создаем экземпляр CreateUserDto из parsedData
-      const createUserDto: CreateUserDto = {
-        telegramId: parsedData.user.id.toString(),
-        username: parsedData.user.username,
-        authDate: parsedData.authDate,
-        authPayload: authData,
-        firstName: parsedData.user.firstName,
-        score: 0 // или другое дефолтное значение
-      };
-
-      const user = await this.findOrCreateUser(createUserDto);
+      await this.findOrCreateUser(parsedData, authData);
 
       return parsedData;
     } catch (error) {
@@ -49,19 +37,36 @@ export class AuthService {
     return 'Hello World!';
   }
 
-  async findOrCreateUser(dto: CreateUserDto) {
-    const user = await this.prisma.user.upsert({
-      where: { telegramId: dto.telegramId },
-      update: { username: dto.username },
-      create: {
-        telegramId: dto.telegramId,
-        username: dto.username,
-        authDate: dto.authDate,
-        authPayload: dto.authPayload,
-        firstName: dto.firstName,
-        score: dto.score,
-      },
+  async findOrCreateUser(parsedData, authData: string) {
+    // Проверяем, существует ли пользователь
+    let user = await this.prisma.user.findUnique({
+      where: { telegramId: parsedData.user.id.toString() },
     });
+
+    if (user) {
+      // Если пользователь существует, используем его существующий score
+      user = await this.prisma.user.update({
+        where: { telegramId: parsedData.user.id.toString() },
+        data: {
+          username: parsedData.user.username,
+          firstName: parsedData.user.firstName,
+          authDate: parsedData.authDate,
+          authPayload: authData,
+        },
+      });
+    } else {
+      // Если пользователя нет, создаем нового с дефолтным score
+      user = await this.prisma.user.create({
+        data: {
+          telegramId: parsedData.user.id.toString(),
+          username: parsedData.user.username,
+          authDate: parsedData.authDate,
+          authPayload: authData,
+          firstName: parsedData.user.firstName,
+          score: 0,  // или другое дефолтное значение
+        },
+      });
+    }
 
     return user;
   }
