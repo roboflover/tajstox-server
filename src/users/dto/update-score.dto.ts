@@ -3,7 +3,7 @@ import { IsNumber, IsString } from 'class-validator';
 
 export class UpdateScoreDto {
   @IsString()
-  telegramId: string;
+  telegramId: number;
 
   @IsNumber()
   score: number;
