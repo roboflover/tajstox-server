@@ -11,28 +11,8 @@ export class AuthController {
     @PublicRoute()
     @Post("authenticate")
     async login(@Body() body: { initData: string }) {
-      console.log(body.initData)
-        return await this.authService.validateInitData(body.initData)
+      // console.log(body.initData)
+        return await this.authService.login(body.initData)
     }
-
-  // @Post('authenticate')
-  // authenticateUser(@Headers('authorization') authorization: string): string {
-  //   const [authType, initData] = (authorization || '').split(' ');
-  //   // console.log('initData', initData)
-  //   if (authType !== 'tma' || !initData) {
-  //     console.log('Неверная схема авторизации')
-  //     throw new UnauthorizedException('Неверная схема авторизации');
-  //   }
-
-  //   try {
-  //     console.log('вызываю метод validateInitData')
-  //     // Используем existing метод validateInitData для валидации
-  //     const validData = this.authService.validateInitData(initData);
-  //     // Например, можем вернуть часть валидных данных
-  //     return `Authentication successful: ${JSON.stringify(validData)}`;
-  //   } catch (error) {
-  //     throw new UnauthorizedException('Ошибка аутентификации пользователя');
-  //   }
-  // }
 
 }
