@@ -16,7 +16,7 @@ export class UsersService {
 
   async getScore(telegramId: string): Promise<number> {
     const user = await this.prisma.user.findUnique({
-      where: { telegramId: telegramId.toString() },
+      where: { telegramId: telegramId },
     });
 
     if (user) {
