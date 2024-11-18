@@ -13,22 +13,22 @@ export class AuthService {
   async login(authData: string): Promise<InitData> {
     const token = '7616166878:AAHKr7IvCJz7hSPZTi3lj9vYQ5j7JAiWTOw';
 
-    this.logger.debug(`Received authData: ${authData}`);
+    // this.logger.debug(`Received authData: ${authData}`);
     
     try {
-      this.logger.debug('Validating authData...');
+      // this.logger.debug('Validating authData...');
       validate(authData, token, { expiresIn: 300 });
-      this.logger.debug('authData validated successfully.');
+      // this.logger.debug('authData validated successfully.');
 
       const parsedData = parse(authData);
-      this.logger.debug(`Parsed data: ${JSON.stringify(parsedData)}`);
+      // this.logger.debug(`Parsed data: ${JSON.stringify(parsedData)}`);
 
       // Создаем экземпляр CreateUserDto из parsedData
       await this.findOrCreateUser(parsedData, authData);
 
       return parsedData;
     } catch (error) {
-      this.logger.error('Failed to validate and parse authData', { error, authData });
+      // this.logger.error('Failed to validate and parse authData', { error, authData });
       throw new UnauthorizedException('Invalid authorization data');
     }
   }
@@ -42,7 +42,7 @@ export class AuthService {
     let user = await this.prisma.user.findUnique({
       where: { telegramId: parsedData.user.id.toString() },
     });
-
+    console.log('проверка юзера')
     if (user) {
       // Если пользователь существует, используем его существующий score
       user = await this.prisma.user.update({
