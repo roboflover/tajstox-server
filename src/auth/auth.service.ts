@@ -24,7 +24,7 @@ export class AuthService {
       // this.logger.debug(`Parsed data: ${JSON.stringify(parsedData)}`);
 
       // Создаем экземпляр CreateUserDto из parsedData
-      await this.findOrCreateUser(parsedData, authData);
+      const user = await this.findOrCreateUser(parsedData, authData);
 
       return parsedData;
     } catch (error) {
@@ -42,7 +42,7 @@ export class AuthService {
     let user = await this.prisma.user.findUnique({
       where: { telegramId: parsedData.user.id.toString() },
     });
-    console.log('проверка юзера')
+    console.log('user', user)
     if (user) {
       // Если пользователь существует, используем его существующий score
       user = await this.prisma.user.update({
