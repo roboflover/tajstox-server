@@ -12,9 +12,9 @@ export class AuthService {
               
   ) {}
 
-  login(authData: string): InitData {
-    //const token = '8193856623:AAHvmJCbFTkaxVSxJ4ooq0Q-LmQLvH3Va3Q';
-    const token = '7616166878:AAHKr7IvCJz7hSPZTi3lj9vYQ5j7JAiWTOw' //cosmotap
+  async login(authData: string): Promise<InitData> {
+    const token = '7616166878:AAHKr7IvCJz7hSPZTi3lj9vYQ5j7JAiWTOw';
+    // это токен от тестового бота его нужно удалить из основного бота.
 
     this.logger.debug(`Received authData: ${authData}`);
     
@@ -25,13 +25,22 @@ export class AuthService {
 
       const parsedData = parse(authData);
       this.logger.debug(`Parsed data: ${JSON.stringify(parsedData)}`);
-      // console.log('parsedData', parsedData)
 
-      const user = this.findOrCreateUser(this.сreateUserDto)
-      console.log(user)
+      // Создаем экземпляр CreateUserDto из parsedData
+      const createUserDto: CreateUserDto = {
+        telegramId: parsedData.user.id.toString(),
+        username: parsedData.user.username,
+        authDate: parsedData.authDate,
+        authPayload: authData,
+        firstName: parsedData.user.firstName,
+        score: 0 // или другое дефолтное значение
+      };
+
+      const user = await this.findOrCreateUser(createUserDto);
+
       return parsedData;
     } catch (error) {
-      this.logger.error('Failed to validate parse authData', { error, authData });
+      this.logger.error('Failed to validate and parse authData', { error, authData });
       throw new UnauthorizedException('Invalid authorization data');
     }
   }

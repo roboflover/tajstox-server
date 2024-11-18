@@ -16,4 +16,7 @@ model User {
   username    String
   firstName   String
   score       Int
+  jwtToken    String?  // Поле для хранения токена подтверждения
+  isVerified  Boolean  @default(false) // Поле для отслеживания подтверждения email
+  role        String   @default("user")
 }
