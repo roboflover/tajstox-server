@@ -13,4 +13,18 @@ export class UsersService {
       data: { score: parseInt(dto.score) },
     });
   }
+
+  async getScore(telegramId: string): Promise<number> {
+    const user = await this.prisma.user.findUnique({
+      where: { telegramId: telegramId.toString() },
+    });
+
+    if (user) {
+      console.log('user.score', user.score)
+      return user.score;
+    } else {
+      throw new Error('User not found');
+    }
+  }
+
 }

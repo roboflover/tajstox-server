@@ -31,5 +31,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
   controllers: [AuthController],
 
 })
+
 export default class AuthModule {}
 

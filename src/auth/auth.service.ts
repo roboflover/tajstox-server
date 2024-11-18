@@ -42,7 +42,7 @@ export class AuthService {
     let user = await this.prisma.user.findUnique({
       where: { telegramId: parsedData.user.id.toString() },
     });
-    console.log('user', user)
+    // console.log('user', user)
     if (user) {
       // Если пользователь существует, используем его существующий score
       user = await this.prisma.user.update({

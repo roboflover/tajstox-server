@@ -1,5 +1,5 @@
 // src/users/users.controller.ts
-import { Controller, Patch, Body } from '@nestjs/common';
+import { Controller, Patch, Body, Get } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateScoreDto } from './dto/update-score.dto';
 
@@ -12,4 +12,11 @@ export class UsersController {
     const user = await this.usersService.updateScore(updateScoreDto);
     return { success: true, data: user };
   }
+
+  @Get('score')
+  async getScore(@Body() telegramId: string) {
+    const score = await this.usersService.getScore(telegramId);
+    return { data: score };
+  }
+
 }
