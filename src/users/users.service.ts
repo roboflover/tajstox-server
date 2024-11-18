@@ -10,7 +10,7 @@ export class UsersService {
   async updateScore(dto: UpdateScoreDto) {
     return this.prisma.user.update({
       where: { telegramId: dto.telegramId },
-      data: { score: dto.score },
+      data: { score: parseInt(dto.score) },
     });
   }
 }
