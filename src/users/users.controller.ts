@@ -9,6 +9,7 @@ export class UsersController {
 
   @Patch('upscore')
   async updateScore(@Body() updateScoreDto: UpdateScoreDto) {
+    console.log(updateScoreDto)
     const user = await this.usersService.updateScore(updateScoreDto);
     return { success: true, data: user };
   }
