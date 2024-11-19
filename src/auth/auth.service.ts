@@ -26,7 +26,7 @@ export class AuthService {
 
       // Генерация JWT токена
       const jwtToken = await this.jwtService.signAsync({ telegramId: user.telegramId });
-      
+      console.log('jwtToken', jwtToken)
       return {
         parsedData,
         token: jwtToken
