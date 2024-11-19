@@ -3,32 +3,35 @@ import { validate, parse, InitData } from '@telegram-apps/init-data-node';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+  ) {}
 
-  async login(authData: string): Promise<InitData> {
+  async login(authData: string): Promise<{ parsedData: InitData, token: string }> {
     const token = '7616166878:AAHKr7IvCJz7hSPZTi3lj9vYQ5j7JAiWTOw';
 
-    // this.logger.debug(`Received authData: ${authData}`);
-    
     try {
-      // this.logger.debug('Validating authData...');
       validate(authData, token, { expiresIn: 300 });
-      // this.logger.debug('authData validated successfully.');
-
       const parsedData = parse(authData);
-      // this.logger.debug(`Parsed data: ${JSON.stringify(parsedData)}`);
 
-      // Создаем экземпляр CreateUserDto из parsedData
+      // Создаем/находим пользователя
       const user = await this.findOrCreateUser(parsedData, authData);
 
-      return parsedData;
+      // Генерация JWT токена
+      const jwtToken = await this.jwtService.signAsync({ telegramId: user.telegramId });
+      console.log(jwtToken)
+      return {
+        parsedData,
+        token: jwtToken
+      };
     } catch (error) {
-      // this.logger.error('Failed to validate and parse authData', { error, authData });
       throw new UnauthorizedException('Invalid authorization data');
     }
   }
