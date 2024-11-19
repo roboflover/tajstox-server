@@ -19,6 +19,7 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @Get('score')
   async getScore(@Req() req: Request) {
+    console.log('privet')
     // Предполагаем, что JwtStrategy добавляет userId в req.user
     const userId = req.user.id; // или другой идентификатор пользователя внутри JWT
 
