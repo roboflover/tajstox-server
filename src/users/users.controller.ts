@@ -1,5 +1,5 @@
 // src/users/users.controller.ts
-import { Controller, Patch, Body, Get, BadRequestException, Query, UseGuards, Req } from '@nestjs/common';
+import { Controller, Patch, Body, Get, BadRequestException, UseGuards, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateScoreDto } from './dto/update-score.dto';
 import { AuthGuard } from '../auth/auth.guard'; // Подразумевается, что у вас настроен механизм JWT-аутентификации
