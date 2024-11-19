@@ -14,17 +14,17 @@ export class UsersService {
     });
   }
 
-  async getScore(telegramId: string): Promise<number> {
-    const user = await this.prisma.user.findUnique({  
-      where: { telegramId: telegramId },
+  async getScoreByUserId(userId: number): Promise<number> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { score: true }
     });
 
-    if (user) {
-      console.log('user.score', user.score)
-      return user.score;
-    } else {
+    if (!user) {
       throw new Error('User not found');
     }
+
+    return user.score;
   }
 
 }
