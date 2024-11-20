@@ -19,7 +19,6 @@ async function bootstrap() {
   app.enableCors();
   await app.listen(port); 
   console.log('port', port)
-  console.log('Process environment BOT_TOKEN:', process.env.BOT_TOKEN);
 
 }
 bootstrap();

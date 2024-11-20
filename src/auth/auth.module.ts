@@ -17,7 +17,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
     // Подключаем JwtModule, который предоставляет сервисы для работы с JWT
     JwtModule.register({
       secret: jwtConstants.secret,  // Устанавливаем секретный ключ для подписи токенов
-      signOptions: { expiresIn: '60s' },  // Опциональные параметры: срок действия токена
+      signOptions: { expiresIn: '600s' },  // Опциональные параметры: срок действия токена
     }),
   ],
   providers: [

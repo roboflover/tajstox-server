@@ -39,7 +39,13 @@ export class AuthGuard implements CanActivate {
                     secret: jwtConstants.secret
                 }
             )
-            request["user"] = payload
+            // request["user"] = payload
+            // Помещаем данные пользователя, включая telegramId, в объект request
+            request.user = payload;
+
+            // Выводим telegramId для проверки
+            console.log('Extracted telegramId:', request.user.telegramId);
+
         } catch {
             throw new UnauthorizedException()
         }
