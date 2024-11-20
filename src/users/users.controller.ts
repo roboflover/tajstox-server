@@ -11,9 +11,18 @@ export class UsersController {
 
   @UseGuards(AuthGuard)
   @Patch('setScore')
-  async updateScore(@Body() updateScoreDto: UpdateScoreDto) {
-    const user = await this.usersService.updateScore(updateScoreDto);
-    return { success: true, data: 15 };
+  async updateScore(@Body() updateScoreDto: UpdateScoreDto, @Req() req: Request) {
+    const telegramId = req.user.telegramId;
+
+    if (!telegramId) {
+      throw new BadRequestException('Invalid token');
+    }
+
+    // Убедитесь, что обновляемый объект DTO содержит telegramId
+    updateScoreDto.telegramId = telegramId;
+    console.log(telegramId)
+    // const user = await this.usersService.updateScore(updateScoreDto);
+    return { success: true, data: 1 };
   }
 
   @UseGuards(AuthGuard)
