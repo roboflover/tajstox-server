@@ -16,7 +16,7 @@ export class UsersService {
 
   async getScoreByUserId(userId: string): Promise<number> {
     const user = await this.prisma.user.findUnique({
-      where: { id: userId },
+      where: { telegramId: userId },
       select: { score: true }
     });
 
