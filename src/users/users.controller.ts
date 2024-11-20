@@ -28,7 +28,7 @@ export class UsersController {
     }
 
     const score = await this.usersService.getScoreByUserId(userId);
-    console.log('score', score)
-    return { data: "score" };
+    // console.log('score', score)
+    return { data: score };
   }
 }
