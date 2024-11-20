@@ -20,9 +20,9 @@ export class UsersController {
 
     // Убедитесь, что обновляемый объект DTO содержит telegramId
     updateScoreDto.telegramId = telegramId;
-    console.log(telegramId)
-    // const user = await this.usersService.updateScore(updateScoreDto);
-    return { success: true, data: 1 };
+    
+    const user = await this.usersService.updateScore(updateScoreDto);
+    return { success: true, data: user };
   }
 
   @UseGuards(AuthGuard)
