@@ -12,17 +12,17 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @Patch('setScore')
   async updateScore(@Body() updateScoreDto: UpdateScoreDto) {
-    // const user = await this.usersService.updateScore(updateScoreDto);
+    console.log(updateScoreDto)
+    //const user = await this.usersService.updateScore(updateScoreDto);
     return { success: true, data: 15 };
   }
 
   @UseGuards(AuthGuard)
   @Get('score')
   async getScore(@Req() req: Request) {
-    // console.log('req.user.telegramId', req.user.telegramId)
-    // Предполагаем, что JwtStrategy добавляет userId в req.user
-    const userId = req.user.telegramId; // или другой идентификатор пользователя внутри JWT
 
+    const userId = req.user.telegramId; 
+    
     if (!userId) {
       throw new BadRequestException('Invalid token');
     }
