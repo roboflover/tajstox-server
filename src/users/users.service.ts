@@ -11,7 +11,7 @@ export class UsersService {
     const score = dto.score
     const newScore = score + 1
     return this.prisma.user.update({
-      where: { telegramId: dto.telegramId.toString() },
+      where: { telegramId: dto.telegramId },
       data: { score: parseInt(newScore) },
     });
   }
