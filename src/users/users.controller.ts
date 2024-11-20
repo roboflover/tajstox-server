@@ -21,13 +21,13 @@ export class UsersController {
   async getScore(@Req() req: Request) {
     console.log('req.user.id', req)
     // Предполагаем, что JwtStrategy добавляет userId в req.user
-    const userId = req.user.id; // или другой идентификатор пользователя внутри JWT
+    // const userId = req.user.id; // или другой идентификатор пользователя внутри JWT
 
-    if (!userId) {
-      throw new BadRequestException('Invalid token');
-    }
+    // if (!userId) {
+    //   throw new BadRequestException('Invalid token');
+    // }
 
-    const score = await this.usersService.getScoreByUserId(userId);
-    return { data: score };
+    // const score = await this.usersService.getScoreByUserId(userId);
+    return { data: 111 };
   }
 }
