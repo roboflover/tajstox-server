@@ -8,12 +8,12 @@ export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
   async updateScore(dto: UpdateScoreDto) {
-    const score = dto.score
+    const score = parseInt(dto.score)
     const newScore = score + 1
-    console.log(dto)
+
     return this.prisma.user.update({
       where: { telegramId: dto.telegramId },
-      data: { score: parseInt(newScore) },
+      data: { score: newScore },
     });
   }
 
