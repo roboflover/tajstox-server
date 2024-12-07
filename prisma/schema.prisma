@@ -19,4 +19,15 @@ model User {
   jwtToken    String?  // Поле для хранения токена подтверждения
   isVerified  Boolean  @default(false) // Поле для отслеживания подтверждения email
   role        String   @default("user")
+  referrals   Referral[] @relation("Referrer") // Referrals made by this user
+  referredBy  Referral[] @relation("Referred") // Referrals where this user was referred
+}
+
+model Referral {
+  id             Int    @id @default(autoincrement())
+  referrerId     Int
+  referredId     Int
+  // Define relationships
+  referrer    User @relation("Referrer", fields: [referrerId], references: [id])
+  referred    User @relation("Referred", fields: [referredId], references: [id])
 }
