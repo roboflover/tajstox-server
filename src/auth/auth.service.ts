@@ -1,8 +1,6 @@
 import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { validate, parse, InitData } from '@telegram-apps/init-data-node';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
@@ -16,8 +14,7 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async login(authData: string): Promise<{ parsedData: InitData, token: string }> {
-    
+  async login(authData: string, referralLink?: string): Promise<{ parsedData: InitData, token: string }> {
     const token = this.configService.get<string>('BOT_TOKEN');
 
     try {
@@ -25,14 +22,14 @@ export class AuthService {
       const parsedData = parse(authData);
 
       // Создаем/находим пользователя
-      const user = await this.findOrCreateUser(parsedData, authData);
+      const user = await this.findOrCreateUser(parsedData, authData, referralLink);
 
       // Генерация JWT токена
       const jwtToken = await this.jwtService.signAsync({ telegramId: user.telegramId });
-      // console.log('jwtToken', jwtToken)
+
       return {
         parsedData,
-        token: jwtToken
+        token: jwtToken,
       };
     } catch (error) {
       throw new UnauthorizedException('Invalid authorization data');
@@ -43,14 +40,12 @@ export class AuthService {
     return 'Hello World!';
   }
 
-  async findOrCreateUser(parsedData, authData: string) {
-    // Проверяем, существует ли пользователь
+  async findOrCreateUser(parsedData, authData: string, referralLink?: string) {
     let user = await this.prisma.user.findUnique({
       where: { telegramId: parsedData.user.id.toString() },
     });
-    // console.log('user', user)
+
     if (user) {
-      // Если пользователь существует, используем его существующий score
       user = await this.prisma.user.update({
         where: { telegramId: parsedData.user.id.toString() },
         data: {
@@ -61,7 +56,14 @@ export class AuthService {
         },
       });
     } else {
-      // Если пользователя нет, создаем нового с дефолтным score
+      let referrer;
+      if (referralLink) {
+        // Логика извлечения ID реферера из ссылки
+        referrer = await this.prisma.user.findUnique({
+          where: { telegramId: referralLink },
+        });
+      }
+
       user = await this.prisma.user.create({
         data: {
           telegramId: parsedData.user.id.toString(),
@@ -69,11 +71,29 @@ export class AuthService {
           authDate: parsedData.authDate,
           authPayload: authData,
           firstName: parsedData.user.firstName,
-          score: 0,  // или другое дефолтное значение
+          score: 0,
+          referredBy: referrer ? {
+            create: {
+              referrer: { connect: { id: referrer.id } }, // Связываем реферера
+            },
+          } : undefined
         },
       });
     }
 
     return user;
+  }
+
+  async updateReferralEarnedScore(referrerId: number, earnedScore: number) {
+    const bonusScore = earnedScore * 0.15;
+
+    await this.prisma.user.update({
+      where: { id: referrerId },
+      data: {
+        score: {
+          increment: bonusScore,
+        },
+      },
+    });
   }
 }
