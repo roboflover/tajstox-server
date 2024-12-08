@@ -25,7 +25,7 @@ export class UsersController {
 
     //const user = await this.usersService.updateScore(updateScoreDto);
 
-    return { success: true, data: user };
+    //return { success: true, data: user };
   }
 
   @UseGuards(AuthGuard)
