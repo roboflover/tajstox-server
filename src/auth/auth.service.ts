@@ -41,6 +41,7 @@ export class AuthService {
   }
 
   async findOrCreateUser(parsedData, authData: string, referralLink?: string) {
+    
     let user = await this.prisma.user.findUnique({
       where: { telegramId: parsedData.user.id.toString() },
     });
