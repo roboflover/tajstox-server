@@ -11,7 +11,7 @@ export class AuthController {
     @PublicRoute()
     @Post("authenticate")
     async login(@Body() body: { initData: string }) {
-      console.log(body.initData)
+      // console.log(body.initData)
         return await this.authService.login(body.initData)
     }
 

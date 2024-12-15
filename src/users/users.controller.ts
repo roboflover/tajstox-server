@@ -13,6 +13,7 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @Post('addReferral')
   async addReferral(@Body() updateReferDto: UpdateReferDto, @Req() req: Request) {
+    console.log('привет')
     const telegramId = req.user.telegramId;
 
     if (!telegramId) {
