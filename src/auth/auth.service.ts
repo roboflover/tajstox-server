@@ -17,7 +17,7 @@ export class AuthService {
   async login(authData: string, referralLink?: string): Promise<{ parsedData: InitData, token: string }> {
     this.logger.log('Starting login process');
     const token = this.configService.get<string>('BOT_TOKEN');
-
+    console.log(`referralLink`, referralLink)
     try {
       this.logger.debug('Validating auth data');
       validate(authData, token, { expiresIn: 300 });
