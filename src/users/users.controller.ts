@@ -13,7 +13,7 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @Post('addReferral')
   async addReferral(@Body() updateReferDto: UpdateReferDto, @Req() req: Request) {
-    console.log('привет')
+
     const telegramId = req.user.telegramId;
 
     if (!telegramId) {
@@ -23,10 +23,10 @@ export class UsersController {
     // Убедитесь, что обновляемый объект DTO содержит telegramId
     updateReferDto.telegramId = telegramId;
     console.log('updateReferDto', updateReferDto)
+    
+    // const user = await this.usersService.updateScore(updateReferDto);
 
-    //const user = await this.usersService.updateScore(updateScoreDto);
-
-    //return { success: true, data: user };
+    // return { success: true, data: user };
   }
 
   @UseGuards(AuthGuard)
