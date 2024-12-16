@@ -15,7 +15,7 @@ model User {
   authPayload String
   username    String?
   firstName   String?
-  score       Int
+  score       Float
   jwtToken    String?  // Поле для хранения токена подтверждения
   isVerified  Boolean  @default(false) // Поле для отслеживания подтверждения email
   role        String   @default("user")
@@ -31,3 +31,4 @@ model Referral {
   referrer    User @relation("Referrer", fields: [referrerId], references: [id])
   referred    User @relation("Referred", fields: [referredId], references: [id])
 }
+
