@@ -29,13 +29,12 @@ export class UsersService {
     });
 
     console.log(`Updated score for user ${dto.telegramId}: ${newScore}`);
+    console.log('updatedUser.id', updatedUser.id)
 
     // Ищем, если у пользователя есть реферер
     const referral = await this.prisma.referral.findFirst({
       where: { referredId: updatedUser.id },
     });
-    console.log('referral', referral)
-    console.log('referral.referrerId', referral.referrerId)
 
     if (referral && referral.referrerId) {
       console.log(`Referral found for user ${dto.telegramId}. Referrer ID: ${referral.referrerId}`);
