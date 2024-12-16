@@ -21,6 +21,7 @@ model User {
   role        String   @default("user")
   referrals   Referral[] @relation("Referrer") // Referrals made by this user
   referredBy  Referral[] @relation("Referred") // Referrals where this user was referred
+  createdAt   DateTime @default(now())
 }
 
 model Referral {
@@ -30,5 +31,6 @@ model Referral {
   // Define relationships
   referrer    User @relation("Referrer", fields: [referrerId], references: [id])
   referred    User @relation("Referred", fields: [referredId], references: [id])
+  createdAt   DateTime @default(now())
 }
 

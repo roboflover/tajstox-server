@@ -7,21 +7,29 @@ export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
   async updateScore(dto: UpdateScoreDto) {
-    const score = parseFloat(dto.score);
-    const newScore = score + 1;
+    const currentScoreData = await this.prisma.user.findUnique({
+      where: { telegramId: dto.telegramId },
+      select: { score: true },
+    });
+
+    if (!currentScoreData) {
+      throw new Error('User not found');
+    }
+
+    const newScore = currentScoreData.score + 1;
 
     const updatedUser = await this.prisma.user.update({
       where: { telegramId: dto.telegramId },
       data: { score: newScore },
     });
 
-    // Ищем, есть ли у пользователя реферер
+    // Ищем, если у пользователя есть реферер
     const referral = await this.prisma.referral.findFirst({
-      where: { referrerId: updatedUser.id },
+      where: { referredId: updatedUser.id },
     });
 
     if (referral && referral.referrerId) {
-      const bonus = score * 0.15; // 15% бонус
+      const bonus = 1 * 0.15; // 15% от добавленного очка
       await this.prisma.user.update({
         where: { id: referral.referrerId },
         data: { score: { increment: bonus } },
