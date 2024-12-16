@@ -78,11 +78,11 @@ export class AuthService {
           this.logger.warn('Referrer not found');
         }
       }
-
+      console.log(parsedData.user)
       user = await this.prisma.user.create({
         data: {
           telegramId: parsedData.user.id.toString(),
-          username: parsedData.user.username,
+          username: parsedData.user.username.toString(),
           authDate: parsedData.authDate,
           authPayload: authData,
           firstName: parsedData.user.firstName,
