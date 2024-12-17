@@ -24,9 +24,9 @@ export class UsersController {
     updateReferDto.telegramId = telegramId;
     console.log('updateReferDto', updateReferDto)
     
-    // const user = await this.usersService.updateScore(updateReferDto);
+    const user = await this.usersService.updateRefer(updateReferDto);
 
-    // return { success: true, data: user };
+    return { success: true, data: user };
   }
 
   @UseGuards(AuthGuard)

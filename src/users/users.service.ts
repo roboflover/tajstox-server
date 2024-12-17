@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateScoreDto } from './dto/update-score.dto';
+import { UpdateReferDto } from './dto/update-refer.dto';
 
 @Injectable()
 export class UsersService {
@@ -52,6 +53,51 @@ export class UsersService {
 
     return updatedUser;
   }
+
+  async updateRefer(updateReferDto: UpdateReferDto) {
+    const { telegramId, referralCode } = updateReferDto;
+
+    // Получение пользователя, который делает реферальное приглашение
+    const referrer = await this.prisma.user.findUnique({
+      where: { telegramId },
+    });
+
+    if (!referrer) {
+      throw new BadRequestException('Referrer not found');
+    }
+
+    // Получение пользователя, который был приглашен
+    const referred = await this.prisma.user.findUnique({
+      where: { telegramId: referralCode },
+    });
+
+    if (!referred) {
+      throw new BadRequestException('Referred user not found');
+    }
+
+    // Проверка, нет ли уже реферальной записи между этими пользователями
+    const existingReferral = await this.prisma.referral.findFirst({
+      where: {
+        referrerId: referrer.id,
+        referredId: referred.id,
+      },
+    });
+
+    if (existingReferral) {
+      throw new BadRequestException('Referral already exists');
+    }
+
+    // Создание новой реферальной записи
+    const referral = await this.prisma.referral.create({
+      data: {
+        referrerId: referrer.id,
+        referredId: referred.id,
+      },
+    });
+
+    return referral;
+  }
+
 
   async getScoreByUserId(userId: string): Promise<number> {
     console.log(`Fetching score for user with telegramId: ${userId}`);
