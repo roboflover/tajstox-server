@@ -40,7 +40,7 @@ export class UsersService {
     if (referral && referral.referrerId) {
       console.log(`Referral found for user ${dto.telegramId}. Referrer ID: ${referral.referrerId}`);
       
-      const bonus = 1 * 0.15; // 15% от добавленного очка
+      const bonus = 1 * 0.15; 
       await this.prisma.user.update({
         where: { id: referral.referrerId },
         data: { score: { increment: bonus } },
@@ -115,4 +115,20 @@ export class UsersService {
     console.log(`Score for user ${userId}: ${user.score}`);
     return user.score;
   }
+  
+  async getReferralCount(telegramId: string): Promise<number> {
+    // Предполагается, что у вас есть User модель, которая содержит рефералы
+    const user = await this.prisma.user.findUnique({
+      where: { telegramId },
+      include: { referrals: true }, // Предполагается, что есть отношение 'referrals'
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    return user.referrals.length;
+  }
+  
 }
+

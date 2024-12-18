@@ -30,6 +30,20 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard)
+  @Get('referralCount')
+  async getReferralCount(@Req() req: Request) {
+    const telegramId = req.user.telegramId;
+
+    if (!telegramId) {
+      throw new BadRequestException('Invalid token');
+    }
+
+    const count = await this.usersService.getReferralCount(telegramId);
+
+    return { success: true, referralCount: count };
+  }
+
+  @UseGuards(AuthGuard)
   @Patch('setScore')
   async updateScore(@Body() updateScoreDto: UpdateScoreDto, @Req() req: Request) {
     const telegramId = req.user.telegramId;
