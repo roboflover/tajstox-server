@@ -14,10 +14,10 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async login(authData: string, referralLink?: string): Promise<{ parsedData: InitData, token: string }> {
+  async login(authData: string): Promise<{ parsedData: InitData, token: string }> {
     this.logger.log('Starting login process');
     const token = this.configService.get<string>('BOT_TOKEN');
-    console.log(`referralLink`, referralLink)
+    // console.log(`referralLink`, referralLink)
     try {
       this.logger.debug('Validating auth data');
       validate(authData, token, { expiresIn: 300 });
@@ -25,7 +25,7 @@ export class AuthService {
       // this.logger.debug(`Parsed data: ${JSON.stringify(parsedData)}`);
 
       // Создаем/находим пользователя
-      const user = await this.findOrCreateUser(parsedData, authData, referralLink);
+      const user = await this.findOrCreateUser(parsedData, authData);
 
       // Генерация JWT токена
       const jwtToken = await this.jwtService.signAsync({ telegramId: user.telegramId });
@@ -42,19 +42,16 @@ export class AuthService {
   }
 
   getHello(): string {
-    // this.logger.log('Responding with Hello World');
     return 'Hello World!';
   }
 
-  async findOrCreateUser(parsedData, authData: string, referralLink?: string) {
-    // this.logger.log(`Finding or creating user with telegram ID: ${parsedData.user.id}`);
+  async findOrCreateUser(parsedData, authData: string) {
 
     let user = await this.prisma.user.findUnique({
       where: { telegramId: parsedData.user.id.toString() },
     });
 
     if (user) {
-      // this.logger.log(`User found: ${user.telegramId}, updating user data`);
       user = await this.prisma.user.update({
         where: { telegramId: parsedData.user.id.toString() },
         data: {
@@ -66,37 +63,17 @@ export class AuthService {
       });
     } else {
       this.logger.log('User not found, creating a new user');
-      let referrer;
-      if (referralLink) {
-        // this.logger.debug(`Finding referrer with telegram ID: ${referralLink}`);
-        referrer = await this.prisma.user.findUnique({
-          where: { telegramId: referralLink },
-        });
-        if (referrer) {
-          this.logger.log(`Referrer found: ${referrer.telegramId}`);
-        } else {
-          this.logger.warn('Referrer not found');
-        }
-      }
-      // console.log(parsedData.user)
       user = await this.prisma.user.create({
         data: {
           telegramId: parsedData.user.id.toString(),
-          // username: parsedData.user.username.toString(),
           authDate: parsedData.authDate,
           authPayload: authData,
           firstName: parsedData.user.firstName,
-          score: 0,
-          referredBy: referrer ? {
-            create: {
-              referrer: { connect: { id: referrer.id } }, // Связываем реферера
-            },
-          } : undefined,
+          score: 0
         },
       });
-      // this.logger.log(`New user created: ${user.telegramId}`);
-    }
 
+    }
     return user;
   }
 
