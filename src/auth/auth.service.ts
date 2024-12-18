@@ -44,18 +44,18 @@ export class AuthService {
   getHello(): string {
     return 'Hello World!';
   }
-
   async findOrCreateUser(parsedData, authData: string) {
-
     let user = await this.prisma.user.findUnique({
       where: { telegramId: parsedData.user.id.toString() },
     });
-
+  
+    const defaultUsername = 'default_username'; // Установите любое значение по умолчанию
+  
     if (user) {
       user = await this.prisma.user.update({
         where: { telegramId: parsedData.user.id.toString() },
         data: {
-          username: parsedData.user.username,
+          username: parsedData.user.username ?? defaultUsername,
           firstName: parsedData.user.firstName,
           authDate: parsedData.authDate,
           authPayload: authData,
@@ -69,11 +69,12 @@ export class AuthService {
           authDate: parsedData.authDate,
           authPayload: authData,
           firstName: parsedData.user.firstName,
-          score: 0
+          score: 0,
+          username: parsedData.user.username ?? defaultUsername,
         },
       });
-
     }
+    
     return user;
   }
 
