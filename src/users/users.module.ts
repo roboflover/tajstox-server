@@ -4,7 +4,6 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtService } from '@nestjs/jwt';
 
 @Module({
   controllers: [UsersController],

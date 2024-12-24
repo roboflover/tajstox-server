@@ -4,11 +4,12 @@ import { PrismaService } from '../prisma/prisma.service'; // Сервис Prisma
 
 @Injectable()
 export class ProgressService {
-  constructor(private prisma: PrismaService) {}
+  
+  constructor(private readonly prisma: PrismaService) {}
 
   async handleDailyInteraction(updateProgressDto: UpdateProgressDto): Promise<string> {
 
-    const { telegramId, bonus, day } = updateProgressDto;
+    const { telegramId } = updateProgressDto;
 
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Убираем время для сравнения только по дате
@@ -72,5 +73,6 @@ export class ProgressService {
 
     // Если пользователь уже взаимодействовал сегодня
     return 'Вы уже отметились сегодня! Приходите завтра.';
+
   }
 }
