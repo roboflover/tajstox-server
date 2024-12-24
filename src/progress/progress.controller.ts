@@ -6,31 +6,30 @@ import { Request } from 'express';
 
 @Controller('progress')
 export class ProgressController {
-  constructor() {}
+  constructor(private readonly progressService: ProgressService) {}
 
   @UseGuards(AuthGuard)
   @Get('active-day')
   async getActiveDay(@Req() req: Request) {
     const telegramId = req.user.telegramId;
-    console.log('telegramId', telegramId)
-    // const activeDay = await this.bonusCalendarService.getActiveDay(userId);
+    // console.log('progress.controller.ts telegramId', telegramId)
+    const activeDay = await this.progressService.getActiveDay(telegramId);
     return { telegramId };
   }
 
-  // @UseGuards(AuthGuard)
-  // @Post('daily-interaction')
-  // async dailyInteraction(@Body() updateProgressDto: UpdateProgressDto, @Req() req: Request) {
-
-  //   const telegramId = req.user.telegramId;
-
-  //   if (!telegramId) {
-  //     throw new BadRequestException('Invalid token');
-  //   }
-
-  //   // Убедитесь, что обновляемый объект DTO содержит telegramId
-  //   updateProgressDto.telegramId = telegramId;
-    
-  //   return this.progressService.handleDailyInteraction(updateProgressDto);
-
-  // }
+  @UseGuards(AuthGuard)
+  @Post('update-day')
+  async updateDay(
+    @Body('day') day: number,
+    @Body('bonus') bonus: number,
+    @Req() req: Request
+  ) {
+    const telegramId = req.user.telegramId;
+    const nextDay = await this.progressService.updateDay(
+      telegramId,
+      day,
+      bonus,
+    );
+    return { nextDay };
+  }
 }

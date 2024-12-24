@@ -6,5 +6,8 @@ export class UpdateProgressDto {
   telegramId: string;
 
   @IsString()
-  referralCode: string;
+  day: string;
+
+  @IsString()
+  bonus: string;
 }

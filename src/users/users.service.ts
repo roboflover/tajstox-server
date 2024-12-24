@@ -100,7 +100,7 @@ export class UsersService {
 
 
   async getScoreByUserId(userId: string): Promise<number> {
-    console.log(`Fetching score for user with telegramId: ${userId}`);
+    // console.log(`Fetching score for user with telegramId: ${userId}`);
 
     const user = await this.prisma.user.findUnique({
       where: { telegramId: userId },
@@ -108,11 +108,11 @@ export class UsersService {
     });
 
     if (!user) {
-      console.error(`User with telegramId ${userId} not found`);
+      // console.error(`User with telegramId ${userId} not found`);
       throw new Error('User not found');
     }
 
-    console.log(`Score for user ${userId}: ${user.score}`);
+    // console.log(`Score for user ${userId}: ${user.score}`);
     return user.score;
   }
   

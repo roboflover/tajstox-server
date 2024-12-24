@@ -44,7 +44,7 @@ export class AuthGuard implements CanActivate {
             request.user = payload;
 
             // Выводим telegramId для проверки
-            console.log('auth.guard.ts Extracted telegramId:', request.user.telegramId);
+            // console.log('auth.guard.ts Extracted telegramId:', request.user.telegramId);
             
         } catch {
             throw new UnauthorizedException()
