@@ -34,3 +34,12 @@ model Referral {
   createdAt   DateTime @default(now())
 }
 
+model UserProgress {
+  id                 Int      @id @default(autoincrement())
+  telegramId         String   @unique
+  lastInteraction    DateTime
+  currentStreak      Int      @default(0) // Текущая длина цепочки дней
+  completedStreaks   Int      @default(0) // Количество завершенных 30-дневных циклов
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}

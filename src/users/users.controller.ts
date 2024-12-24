@@ -33,7 +33,7 @@ export class UsersController {
   @Get('referralCount')
   async getReferralCount(@Req() req: Request) {
     const telegramId = req.user.telegramId;
-
+    console.log('telegramId', telegramId)
     if (!telegramId) {
       throw new BadRequestException('Invalid token');
     }
