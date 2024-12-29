@@ -12,7 +12,7 @@ export class ProgressController {
   @Get('active-day')
   async getActiveDay(@Req() req: Request) {
     const telegramId = req.user.telegramId;
-    // console.log('progress.controller.ts telegramId', telegramId)
+    console.log('progress.controller.ts telegramId', telegramId)
     const activeDay = await this.progressService.getActiveDay(telegramId);
     return { telegramId };
   }
