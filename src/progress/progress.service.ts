@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { addDays, isAfter } from 'date-fns';
+import { addDays, addMinutes, isAfter } from 'date-fns';
 
 @Injectable()
 export class ProgressService {
@@ -47,7 +47,8 @@ export class ProgressService {
       }
   
       // Проверяем, прошло ли 24 часа с момента последнего взаимодействия
-      const canPerformAction = isAfter(now, addDays(userProgress.lastInteraction, 1));
+      // const canPerformAction = isAfter(now, addDays(userProgress.lastInteraction, 1));
+      const canPerformAction = isAfter(now, addMinutes(userProgress.lastInteraction, 2));
       console.log('Check if action can be performed', { now, lastInteraction: userProgress.lastInteraction, canPerformAction });
   
       if (!canPerformAction) {
@@ -93,7 +94,7 @@ export class ProgressService {
           lastInteraction: now,
         },
       });
-      console.log('Updated userProgress', userProgress);
+      console.log('Updated userProgress', userProgress)
   
       return userProgress.currentStreak;
   
