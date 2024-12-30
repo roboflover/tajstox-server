@@ -24,14 +24,14 @@ export class ProgressController {
     @Body('bonus') bonus: number,
     @Req() req: Request
   ) {
-    console.log(day, bonus)
+    // console.log(day, bonus)
     const telegramId = req.user.telegramId;
-    // const nextDay = await this.progressService.updateDay(
-    //   telegramId,
-    //   day,
-    //   bonus,
-    // );
+    const nextDay = await this.progressService.updateDay(
+      telegramId,
+      day,
+      bonus,
+    );
     console.log('nextDay')
-    return `{ nextDay }`;
+    return { nextDay };
   }
 }
