@@ -14,7 +14,7 @@ export class ProgressController {
     const telegramId = req.user.telegramId;
     // console.log('progress.controller.ts telegramId', telegramId)
     const activeDay = await this.progressService.getActiveDay(telegramId);
-    return { telegramId };
+    return { activeDay };
   }
 
   @UseGuards(AuthGuard)
