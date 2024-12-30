@@ -32,48 +32,75 @@ export class ProgressService {
 
   async updateDay(telegramId: string, day: number, bonus: number): Promise<number> {
     const now = new Date();
-    
-    let userProgress = await this.prisma.userProgress.findUnique({
-      where: { telegramId },
-    });
-
-    if (!userProgress) {
-      throw new Error('User progress not found');
+    console.log('Start updateDay', { telegramId, day, bonus, now });
+  
+    try {
+      // Получаем прогресс пользователя
+      let userProgress = await this.prisma.userProgress.findUnique({
+        where: { telegramId },
+      });
+      console.log('Fetched userProgress', userProgress);
+  
+      if (!userProgress) {
+        console.error('User progress not found for telegramId:', telegramId);
+        throw new Error('User progress not found');
+      }
+  
+      // Проверяем, прошло ли 24 часа с момента последнего взаимодействия
+      const canPerformAction = isAfter(now, addDays(userProgress.lastInteraction, 1));
+      console.log('Check if action can be performed', { now, lastInteraction: userProgress.lastInteraction, canPerformAction });
+  
+      if (!canPerformAction) {
+        console.error('Action can only be performed once every 24 hours', { telegramId });
+        throw new Error('Action can only be performed once every 24 hours');
+      }
+  
+      // Проверяем, совпадает ли текущий день с ожидаемым
+      if (userProgress.currentStreak !== day) {
+        console.error('Invalid day', { expectedDay: userProgress.currentStreak, providedDay: day });
+        throw new Error('Invalid day');
+      }
+  
+      // Получаем данные пользователя
+      const user = await this.prisma.user.findUnique({
+        where: { telegramId },
+      });
+      console.log('Fetched user', user);
+  
+      if (!user) {
+        console.error('User not found for telegramId:', telegramId);
+        throw new Error('User not found');
+      }
+  
+      // Обновляем очки пользователя
+      const updatedUser = await this.prisma.user.update({
+        where: { telegramId },
+        data: {
+          score: user.score + bonus,
+        },
+      });
+      console.log('Updated user score', { telegramId, newScore: updatedUser.score });
+  
+      // Рассчитываем следующий день
+      const nextDay = day >= 15 ? 1 : day + 1;
+      console.log('Calculated nextDay', { currentDay: day, nextDay });
+  
+      // Обновляем прогресс пользователя
+      userProgress = await this.prisma.userProgress.update({
+        where: { telegramId },
+        data: {
+          currentStreak: nextDay,
+          lastInteraction: now,
+        },
+      });
+      console.log('Updated userProgress', userProgress);
+  
+      return userProgress.currentStreak;
+  
+    } catch (error) {
+      console.error('Error in updateDay', { telegramId, day, bonus, error });
+      throw error; // Пробрасываем ошибку дальше
     }
-
-    // Ensure the action is performed only once per 24 hours period
-    if (!isAfter(now, addDays(userProgress.lastInteraction, 1))) {
-      throw new Error('Action can only be performed once every 24 hours');
-    }
-
-    if (userProgress.currentStreak !== day) {
-      throw new Error('Invalid day');
-    }
-
-    const user = await this.prisma.user.findUnique({
-      where: { telegramId },
-    });
-
-    if (!user) {
-      throw new Error('User not found');
-    }
-
-    await this.prisma.user.update({
-      where: { telegramId },
-      data: {
-        score: user.score + bonus,
-      },
-    });
-
-    const nextDay = day >= 15 ? 1 : day + 1;
-    userProgress = await this.prisma.userProgress.update({
-      where: { telegramId },
-      data: {
-        currentStreak: nextDay,
-        lastInteraction: now,
-      },
-    });
-
-    return userProgress.currentStreak;
   }
+  
 }
