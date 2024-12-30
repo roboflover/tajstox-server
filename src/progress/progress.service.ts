@@ -32,14 +32,12 @@ export class ProgressService {
 
   async updateDay(telegramId: string, day: number, bonus: number): Promise<number> {
     const now = new Date();
-    console.log('Start updateDay', { telegramId, day, bonus, now });
   
     try {
       // Получаем прогресс пользователя
       let userProgress = await this.prisma.userProgress.findUnique({
         where: { telegramId },
       });
-      console.log('Fetched userProgress', userProgress);
   
       if (!userProgress) {
         console.error('User progress not found for telegramId:', telegramId);
@@ -47,9 +45,7 @@ export class ProgressService {
       }
   
       // Проверяем, прошло ли 24 часа с момента последнего взаимодействия
-      // const canPerformAction = isAfter(now, addDays(userProgress.lastInteraction, 1));
-      const canPerformAction = isAfter(now, addMinutes(userProgress.lastInteraction, 2));
-      console.log('Check if action can be performed', { now, lastInteraction: userProgress.lastInteraction, canPerformAction });
+      const canPerformAction = isAfter(now, addMinutes(userProgress.lastInteraction, 1440)); // Для теста используем 2 минуты
   
       if (!canPerformAction) {
         console.error('Action can only be performed once every 24 hours', { telegramId });
@@ -66,7 +62,6 @@ export class ProgressService {
       const user = await this.prisma.user.findUnique({
         where: { telegramId },
       });
-      console.log('Fetched user', user);
   
       if (!user) {
         console.error('User not found for telegramId:', telegramId);
@@ -80,11 +75,9 @@ export class ProgressService {
           score: user.score + bonus,
         },
       });
-      console.log('Updated user score', { telegramId, newScore: updatedUser.score });
   
       // Рассчитываем следующий день
       const nextDay = day >= 15 ? 1 : day + 1;
-      console.log('Calculated nextDay', { currentDay: day, nextDay });
   
       // Обновляем прогресс пользователя
       userProgress = await this.prisma.userProgress.update({
@@ -94,7 +87,6 @@ export class ProgressService {
           lastInteraction: now,
         },
       });
-      console.log('Updated userProgress', userProgress)
   
       return userProgress.currentStreak;
   
@@ -103,5 +95,6 @@ export class ProgressService {
       throw error; // Пробрасываем ошибку дальше
     }
   }
+  
   
 }
