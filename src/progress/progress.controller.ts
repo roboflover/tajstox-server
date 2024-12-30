@@ -26,11 +26,11 @@ export class ProgressController {
   ) {
     const telegramId = req.user.telegramId;
     console.log('progress.controller.ts', telegramId)
-    // const nextDay = await this.progressService.updateDay(
-    //   telegramId,
-    //   day,
-    //   bonus,
-    // );
+    const nextDay = await this.progressService.updateDay(
+      telegramId,
+      day,
+      bonus,
+    );
     return 'nextDay' ;
   }
 }
