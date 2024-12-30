@@ -34,6 +34,7 @@ export class ProgressService {
   }
 
   async updateDay(telegramId: string, day: number, bonus: number): Promise<number> {
+    console.log(telegramId, day, bonus)
     // Получаем информацию о прогрессе пользователя
     let userProgress = await this.prisma.userProgress.findUnique({
       where: { telegramId },

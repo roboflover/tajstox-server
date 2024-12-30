@@ -12,7 +12,7 @@ export class ProgressController {
   @Get('active-day')
   async getActiveDay(@Req() req: Request) {
     const telegramId = req.user.telegramId;
-    console.log('progress.controller.ts telegramId', telegramId)
+    // console.log('progress.controller.ts telegramId', telegramId)
     const activeDay = await this.progressService.getActiveDay(telegramId);
     return { telegramId };
   }
@@ -25,12 +25,12 @@ export class ProgressController {
     @Req() req: Request
   ) {
     const telegramId = req.user.telegramId;
-    console.log('progress.controller.ts', telegramId)
     const nextDay = await this.progressService.updateDay(
       telegramId,
       day,
       bonus,
     );
-    return 'nextDay' ;
+    console.log('nextDay', nextDay)
+    return { nextDay };
   }
 }
