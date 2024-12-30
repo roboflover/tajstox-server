@@ -25,12 +25,12 @@ export class ProgressController {
     @Req() req: Request
   ) {
     const telegramId = req.user.telegramId;
-    const nextDay = await this.progressService.updateDay(
-      telegramId,
-      day,
-      bonus,
-    );
-    console.log('nextDay', nextDay)
-    return { nextDay };
+    // const nextDay = await this.progressService.updateDay(
+    //   telegramId,
+    //   day,
+    //   bonus,
+    // );
+    console.log('nextDay')
+    return `{ nextDay }`;
   }
 }
