@@ -45,7 +45,7 @@ export class ProgressService {
       }
   
       // Проверяем, прошло ли 24 часа с момента последнего взаимодействия
-      const canPerformAction = isAfter(now, addMinutes(userProgress.lastInteraction, 2)); // Для теста используем 2 минуты
+      const canPerformAction = isAfter(now, addMinutes(userProgress.lastInteraction, 1440)); // Для теста используем 2 минуты
   
       if (!canPerformAction) {
         console.error('Action can only be performed once every 24 hours', { telegramId });
